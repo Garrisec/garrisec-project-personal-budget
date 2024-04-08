@@ -23,6 +23,22 @@ What I learned:
 
 ## How to use
 
+### Setting Up
+
+Clone repository:
+
+```shell
+git clone <link-to-this-repository>
+```
+
+This command installs a package and any packages that it depends on:
+
+```shell
+npm install
+```
+
+Use an API testing application such as [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/download).
+
 ### Create your envelopes: 
 
 Endpoint:
