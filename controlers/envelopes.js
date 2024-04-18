@@ -61,6 +61,11 @@ exports.getAllEnvelopes = (req, res, next) => {
 exports.getSpecificEnvelope = (req, res, next) => {
     try {
         const envelope = envelopes.find((element) => element.id === Number(req.envelope));
+        
+        if (!envelope) {
+            return res.status(404).send({message: 'Envelope Not Found'});
+        }
+
         res.status(200).send(envelope);
     } catch (err) {
         res.status(500).send(err);
@@ -70,17 +75,14 @@ exports.getSpecificEnvelope = (req, res, next) => {
 // PUT: Update specific envelope by id
 exports.updateSpecificEnvelope = (req, res, next) => {
     try {
-        const notEmpty = checkUserInputEmpty(req.body);
         let envelope = envelopes.find((element) => element.id === Number(req.envelope));
 
-        if (notEmpty === true) {
-            // Subtract budget in a envelope (Put this function in a module)
-            envelope.budget = envelope.budget - req.body.budget;
-            
-            res.send(envelope);
-        } else {
-            res.status(400).send();
-        }
+        if (!envelope) {
+            return res.status(404).send({message: 'Envelope Not Found'});
+        } 
+
+        envelope.budget = envelope.budget - req.body.budget;    
+        res.status(200).send(envelope);
     } catch (err) {
         res.status(500).send(err);
     }
@@ -90,6 +92,11 @@ exports.updateSpecificEnvelope = (req, res, next) => {
 exports.deleteSpecificEnvelope = (req, res, next) => {
     try {
         let envelope = envelopes.findIndex((element) => element.id === Number(req.envelope));
+        
+        if (envelope === -1) {
+            return res.status(404).send({message: 'Envelope Not Found'});
+        }
+        
         envelopes.splice(envelope,1);
         res.status(200).send();
     } catch (err) {
@@ -102,6 +109,10 @@ exports.transferValueEnvelope = (req, res, next) => {
     try {
         let fromEnvelope = envelopes.find((element) => element.id === Number(req.params.from));
         let toEnvelope = envelopes.find((element) => element.id === Number(req.params.to));
+        
+        if (!fromEnvelope || !toEnvelope) {
+            return res.status(404).send({message: 'Envelope Not Found'});
+        }
 
         fromEnvelope.budget -= Number(req.body.value);
         toEnvelope.budget += Number(req.body.value);
