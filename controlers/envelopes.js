@@ -1,4 +1,3 @@
-const checkUserInputEmpty = require('../helpers/db-helpers');
 
 // Datas database
 const envelopes = [
@@ -19,6 +18,9 @@ const envelopes = [
     }
 ]
 
+// Variable to identify each new envelope
+let id = 4;
+
 // Parse parameter
 exports.parsingParameters = (req, res, next, id) => {
     try {
@@ -32,18 +34,14 @@ exports.parsingParameters = (req, res, next, id) => {
 // POST: Create a envelope
 exports.createEnvelopes = (req, res, next) => {
     try {
-        const isValid = checkUserInputEmpty(req.body);
-        console.log(req.body);
-        if (isValid === true) {
+        if (Object.keys(req.body).length != 0) {
             req.body.id = id++;
             envelopes.push(req.body);
-            console.log(envelopes);
             res.status(201).send(req.body);
         } else {
             res.status(400).send();
         }
     } catch (err) {
-        console.log('deu erro')
         res.status(500).send(err);
     }    
 }
@@ -98,7 +96,7 @@ exports.deleteSpecificEnvelope = (req, res, next) => {
         }
         
         envelopes.splice(envelope,1);
-        res.status(200).send();
+        res.status(204).send();
     } catch (err) {
         res.status(500).send(err);
     }

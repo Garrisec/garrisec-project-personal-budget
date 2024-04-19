@@ -44,12 +44,7 @@ Use an API testing application such as [Postman](https://www.postman.com/) or [I
 Endpoint:
 
 ```txt
-POST /envelopes
-
-URL Example:
-
-localhost:4001/envelopes
-
+localhost:6000/envelopes
 ```
 
 Input format:
@@ -76,18 +71,13 @@ Expected output:
 Endpoint:
 
 ```txt
-GET /:envelope
-
-URL Example:
-
-localhost:4001/1
-
+localhost:6000/envelopes/1
 ```
 
 Input format:
 
 ```txt
-
+1,2,3...
 ```
 
 Expected output:
@@ -105,18 +95,7 @@ Expected output:
 Endpoint:
 
 ```txt
-GET /
-
-URL Example:
-
-localhost:4001/
-
-```
-
-Input format:
-
-```txt
-
+localhost:6000/envelopes/
 ```
 
 Expected output:
@@ -139,17 +118,12 @@ Expected output:
 }
 ```
 
-### Update specific envelopes and balances 
+### Update specific envelopes and balances (remove value from envelope)
 
 Endpoint:
 
 ```txt
-PUT /x
-
-URL Example::
-
-localhost:4001/1
-
+localhost:6000/envelopes/2
 ```
 
 Input format:
@@ -175,24 +149,7 @@ Expected output:
 Endpoint:
 
 ```txt
-PUT /x
-
-URL Example::
-
-localhost:4001/1
-
-```
-
-Input format:
-
-```txt
-
-```
-
-Expected output:
-
-```txt
-
+localhost:6000/envelopes/1
 ```
 
 ### Transfer budgets from different envelopes 
@@ -200,12 +157,7 @@ Expected output:
 Endpoint:
 
 ```txt
-POST /envelopes/transfer/<envelope-1>/<envelope-2>
-
-URL Example:
-
-localhost:4001/envelopes/transfer/1/2
-
+localhost:6000/envelopes/transfer/2/3
 ```
 
 Input format:
