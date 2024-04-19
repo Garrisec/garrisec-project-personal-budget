@@ -1,5 +1,5 @@
 
-// Datas database
+// Database
 const envelopes = [
     {
         title: "Gas",
