@@ -42,7 +42,6 @@ exports.getTransactionById =  async (req, res) => {
 exports.updateTransaction = async (req, res) => {
     const id = req.params.id;
     const { title, value } = req.body;
-    console.log('x')
 
     try {
         const checkTransaction = await db.query('SELECT * FROM transactions WHERE id = $1', [id]);
@@ -50,14 +49,12 @@ exports.updateTransaction = async (req, res) => {
         if (checkTransaction.rowsCount === 0) {
             res.status(404).send('Transaction not found.');
         }
-        // console.log('x1')
+
         const updateEnvelope = await db.query('UPDATE envelopes SET budget = $1 WHERE id IN (SELECT envelope_id FROM transactions WHERE id = $2)', [value, id])
-        // console.log('x2')
         const updatetransaction = await db.query('UPDATE transactions SET title = $1, value = $2 WHERE id = $3 RETURNING *', [title, value, id]);
         
         res.status(200).send(updateTransaction.rows);
     } catch (error) {
-        // console.log('x')
         res.status(500).send(error);
     }
 }

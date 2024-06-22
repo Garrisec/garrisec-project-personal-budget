@@ -1,9 +1,6 @@
 
 const db = require('../db/index');
 
-// Variable to identify each new envelope
-// let id = 4;
-
 // Parse parameter
 exports.parsingParameters = (req, res, next, id) => {
     try {
@@ -35,7 +32,7 @@ exports.createEnvelopes = async (req, res) => {
 exports.getAllEnvelopes = async (req, res) => {
     try {
         const envelopes = await db.query('SELECT * FROM envelopes');
-        console.log(typeof envelopes.rows)
+
         if (envelopes.rowCount === 0) {
             return res.status(404).send({ message: 'Envelopes not found.' });
         } 
