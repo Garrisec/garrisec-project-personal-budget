@@ -8,29 +8,32 @@ const {
   getSpecificEnvelope,
   updateSpecificEnvelope,
   deleteSpecificEnvelope,
-  transferValueEnvelope
+  getEnvelopeTransaction,
+  newEnvelopeTransaction
 } = require('../controlers/envelopes.js');
 
 // Parse parameters
-router.param('envelope', parsingParameters);
+router.param('id', parsingParameters);
 
 // Create envelopes
-router.post('/', createEnvelopes);
+router.post('/newenvelope', createEnvelopes);
 
-// GET all envelopes
+// GET all envelopes  
 router.get('/', getAllEnvelopes);
 
 // GET specific envelope
-router.get('/:envelope', getSpecificEnvelope);
+router.get('/:id', getSpecificEnvelope);
 
 // Update a specific envelope
-router.put('/:envelope', updateSpecificEnvelope);
+router.put('/update/:id', updateSpecificEnvelope);
 
 // Delete specific envelope
-router.delete('/:envelope', deleteSpecificEnvelope);
+router.delete('/delete/:id', deleteSpecificEnvelope);
 
-// Transfers a value from one envelope to another 
-router.post('/transfer/:from/:to', transferValueEnvelope);
+// GET envelope transaction by id
+router.get('/:id/transactions', getEnvelopeTransaction);
 
+// POST new transaction
+router.post('/:id/transactions', newEnvelopeTransaction);
 
 module.exports = router;

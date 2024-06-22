@@ -1,0 +1,300 @@
+openapi: 3.0.1
+info:
+  title: Personal Budget API
+  version: 1.0.0
+  description: An API for organizing personal budget digital envelopes.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /envelopes:
+    summary: Get all the envelopes
+    description: This path is used to retrieve the envelopes from the database.
+    get:
+      summary: Get all the envelopes
+      description: Gets all the envelopes from the database.
+      operationId: get_envelopes
+      responses:
+        '200':
+          description: A JSON object containing all the envelopes.
+          content:
+            application/json:
+              examples:
+                Success:
+                  value: |-
+                    {
+                        "status": "Success",
+                        "message": "Transaction information retrieved.",
+                        "data": [
+                            {
+                                "id": 14,
+                                "title": "Food",
+                                "budget": 1000
+                            },
+                            {
+                                "id": 25,
+                                "title": "Shopping",
+                                "budget": 500
+                            },
+                            {
+                                "id": 15,
+                                "title": "Supermarket",
+                                "budget": 500
+                            },
+                            {
+                                "id": 16,
+                                "title": "Gas",
+                                "budget": 500
+                            }
+                        ]
+                    }
+        '404':
+          description: A JSON object containing a message.
+          content:
+            application/json:
+              examples:
+                Envelopes not found.:
+                  value: { "message": "Envelopes not found." }
+      tags:
+        - Envelopes
+  /envelopes/{id}:
+    summary: Get a specific evelope
+    description: Get a specific evelope from the database.
+    get:
+      summary: Get a specific envelope
+      description: Get a specific envelope using an id.
+      operationId: get_envelopes_id
+      parameters:
+        - name: id
+          in: path
+          description: The id of the envelope.
+          required: true
+          schema:
+            type: string
+      tags:
+        - Specific Envelope
+      responses:
+        '200':
+          description: A JSON object containing the requested envelope.
+          content:
+            application/json:
+              examples:
+                getenvelope:
+                  value: |-
+                    {
+                        "status": "Success",
+                        "message": "Envelope retrieved.",
+                        "data": [
+                            {
+                                "id": 14,
+                                "title": "Food",
+                                "budget": 1000
+                            }
+                        ]
+                    }
+        '404':
+          description: A JSON object containing a message.
+          content:
+            application/json:
+              examples:
+                getenvelope:
+                  value: { "message": "Envelope not found." }
+  /newenvelope:
+    summary: Add a new envelope
+    description: Adds a new envelope to the database.
+    post:
+      summary: Create a new envelope
+      description: Creates a new envelope in the database.
+      operationId: post_envelope
+      requestBody:
+        description: A new envelope object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Supermarket"
+                budget:
+                  type: integer
+                  example: 500
+      responses:
+        '200':
+          description: A JSON object containing the new envelope created.
+          content:
+            application/json:
+              examples:
+                newenvelope:
+                  value: |-
+                    {
+                        "status": "Success",
+                        "message": "Envelope created.",
+                        "data": [
+                            {
+                                "id": 26,
+                                "title": "Supermarket",
+                                "budget": 500
+                            }
+                        ]
+                    }
+      tags:
+        - New Envelope
+  /update/{id}:
+    summary: Update an envelope
+    description: Updates an envelope in the database.
+    put:
+      summary: Update a specific envelope
+      description: Update a specific envelope using an id.
+      operationId: put_envelope
+      parameters:
+        - name: id
+          in: path
+          description: The id of the envelope
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A update envelope object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Supermarket"
+                budget:
+                  type: integer
+                  example: 2000
+      responses:
+        '201':
+          description: A JSON object containing the updated envelope.
+          content:
+            application/json:
+              examples:
+                updateenvelope:
+                  value: |-
+                    {
+                        "status": "Success",
+                        "message": "Envelope updated.",
+                        "data": [
+                            {
+                                "id": 14,
+                                "title": "Supermarket",
+                                "budget": 2000
+                            }
+                        ]
+                    }
+        '404':
+          description: A JSON object containing a message.
+          content:
+            application/json:
+              examples:
+                envelopenotfound:
+                  value:
+                    message: Envelope not found.
+      tags:
+        - Update Envelope
+  /delete/{id}:
+    summary: Delete an envelope
+    description: Deletes an envelope in the database.
+    delete:
+      summary: Delete a specific envelope
+      description: Delete a specific envelope in the database.
+      operationId: delete_envelope
+      tags:
+        - Delete Envelope
+      parameters:
+        - name: id
+          in: path
+          description: The id of the envelope
+          required: true
+          schema:
+            type: string
+      responses: 
+        '204':
+          description: Envelope deleted.
+        '404':
+          description: A JSON object containing a message.
+          content:
+            application/json:
+              examples:
+                notfound:
+                  value: |-
+                    {
+                        "message": "Envelope not found."
+                    }
+  /envelopes/{id}/transactions:
+    summary: Create a new envelope transaction
+    description: Create a new envelope transaction by taking an amount from an envelope.
+    post:
+      summary: Subtracts a value from an envelope by id
+      description: Subtracts a value from an envelope by id from the database.
+      operationId: post_transaction
+      parameters:
+        - name: id
+          in: path
+          description: The id of the envelope
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A transaction envelope object
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Disney
+                value:
+                  type: integer
+                  example: 500
+      responses:
+        '200':
+          description: A JSON object containing the transaction data.
+          content:
+            application/json:
+              examples:
+                posttransaction:
+                  value: |-
+                    {
+                        "status": "Success",
+                        "message": "Transaction successfully completed.",
+                        "data": [
+                            {
+                                "id": 6,
+                                "title": "Disney",
+                                "value": 500,
+                                "date": "2024-06-22T15:49:42.660Z",
+                                "envelope_id": 15
+                            }
+                        ]
+                    }
+        '404':
+          description: A JSON object containing a message.
+          content:
+            application/json:
+              examples:
+                notfound:
+                  value: |-
+                    {
+                        "message": "Envelope not found or value greater than the envelope."
+                    }
+      tags:
+        - Transaction Envelope
+components:
+  schemas:
+    Envelope:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        state:
+          type: string
+      xml:
+        name: Envelope
