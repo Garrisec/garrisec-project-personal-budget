@@ -1,4 +1,3 @@
-
 const db = require('../db/index');
 
 // Parse parameter
@@ -13,10 +12,12 @@ exports.parsingParameters = (req, res, next, id) => {
 
 // POST: Create a envelope
 exports.createEnvelopes = async (req, res) => {
-    const { title, budget } = req.body;
-
     try {
-        const envelopes = await db.query('INSERT INTO envelopes (title, budget) VALUES ($1, $2) RETURNING *', [title, budget]);
+        const { title, budget } = req.body;
+
+        const queryEnvelopes = 'INSERT INTO envelopes (title, budget) VALUES ($1, $2) RETURNING *';
+
+        const envelopes = await db.query(queryEnvelopes, [title, budget]);
 
         res.status(200).send({
             status: 'Success',
@@ -31,7 +32,9 @@ exports.createEnvelopes = async (req, res) => {
 // GET: Get all envelopes
 exports.getAllEnvelopes = async (req, res) => {
     try {
-        const envelopes = await db.query('SELECT * FROM envelopes');
+        const queryEnvelopes = 'SELECT * FROM envelopes';
+
+        const envelopes = await db.query(queryEnvelopes);
 
         if (envelopes.rowCount === 0) {
             return res.status(404).send({ message: 'Envelopes not found.' });
@@ -50,7 +53,11 @@ exports.getAllEnvelopes = async (req, res) => {
 // GET: Get specific envelope by id
 exports.getSpecificEnvelope = async (req, res) => {
     try {
-        const envelopes = await db.query('SELECT * FROM envelopes WHERE id = $1', [req.params.id]);
+        const id = req.params.id;
+
+        const queryEnvelopes = 'SELECT * FROM envelopes WHERE id = $1';
+
+        const envelopes = await db.query(queryEnvelopes, [id]);
 
         if (envelopes.rowCount === 0) {
             return res.status(404).send({ message: 'Envelope not found.' });
@@ -68,11 +75,13 @@ exports.getSpecificEnvelope = async (req, res) => {
 
 // PUT: Update specific envelope by id
 exports.updateSpecificEnvelope = async (req, res) => {
-    const id = req.params.id;
-    const { title, budget } = req.body;
-
     try {
-        const envelopes = await db.query('UPDATE envelopes SET title = $1, budget = $2 WHERE id = $3 RETURNING *;', [title, budget, id]);
+        const id = req.params.id;
+        const { title, budget } = req.body;
+
+        const queryEnvelopes = 'UPDATE envelopes SET title = $1, budget = $2 WHERE id = $3 RETURNING *';
+
+        const envelopes = await db.query(queryEnvelopes, [title, budget, id]);
 
         if (envelopes.rowCount === 0) {
             return res.status(404).send({ message: 'Envelope not found.' });
@@ -91,10 +100,11 @@ exports.updateSpecificEnvelope = async (req, res) => {
 
 // DELETE: Delete a specific envelope by id
 exports.deleteSpecificEnvelope = async (req, res) => {
-    const id = req.params.id;
-
     try {
-        const envelopes = await db.query('DELETE FROM envelopes WHERE id = $1 RETURNING *', [id]);
+        const id = req.params.id;
+        const queryEnvelopes = 'DELETE FROM envelopes WHERE id = $1 RETURNING *';
+
+        const envelopes = await db.query(queryEnvelopes, [id]);
 
         if (envelopes.rowCount === 0) {
             return res.status(404).send({ message: 'Envelope not found.' });
@@ -112,16 +122,23 @@ exports.newEnvelopeTransaction = async (req, res) => {
         const { title, value } = req.body;
         const date = new Date();
 
-        // Check that the envelopes exist and that the envelope is equal to or greater than the value of the transaction
-        const checkEnvelope = await db.query('SELECT EXISTS (SELECT budget >= $1 FROM envelopes WHERE id = $2)', [value, id]);
+        const queryCheckEnvelope = 'SELECT budget >= $1 FROM envelopes WHERE id = $2 AND budget >= $1';
+        const queryUpdateEnvelope = 'UPDATE envelopes SET budget = budget - $1 WHERE id = $2';
+        const queryInsertEnvelope = 'INSERT INTO transactions (title, value, date, envelope_id) VALUES ($1, $2, $3, $4) RETURNING *';
+
+        // TRANSACTION
+        await db.query('BEGIN');
+
+        const checkEnvelope = await db.query(queryCheckEnvelope, [value, id]);
        
-        if (checkEnvelope.rows[0].exists === false) {
+        if (checkEnvelope.rowCount === 0) {
             return res.status(404).send({ message: 'Envelope not found or value greater than the envelope.' });
         }
 
-        // Transaction
-        const envelopes = await db.query('UPDATE envelopes SET budget = budget - $1 WHERE id = $2', [value, id]);
-        const transaction = await db.query('INSERT INTO transactions (title, value, date, envelope_id) VALUES ($1, $2, $3, $4) RETURNING *', [title, value, date, id]);
+        const envelopes = await db.query(queryUpdateEnvelope, [value, id]);
+        const transaction = await db.query(queryInsertEnvelope, [title, value, date, id]);
+        
+        await db.query('COMMIT');
 
         res.status(200).send({
             status: 'Success',
@@ -129,6 +146,7 @@ exports.newEnvelopeTransaction = async (req, res) => {
             data: transaction.rows
         });
     } catch (error) {
+        await db.query('ROLLBACK')
         res.status(500).send(error);
     }
 }
@@ -137,7 +155,9 @@ exports.getEnvelopeTransaction = async (req, res) => {
     try {
         const id = req.params.id;
 
-        const transaction = await db.query('SELECT * FROM transactions WHERE envelope_id = $1', [id]);
+        const queryGetTransaction = 'SELECT * FROM transactions WHERE envelope_id = $1';
+
+        const transaction = await db.query(queryGetTransaction, [id]);
 
         if (transaction.rowCount === 0) {
             return res.status(404).send({ message: 'Transaction not found.' });

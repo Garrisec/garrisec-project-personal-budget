@@ -15,14 +15,14 @@ const {
 // Parse parameters
 router.param('id', parsingParameters);
 
-// Create envelopes
-router.post('/newenvelope', createEnvelopes);
-
-// GET all envelopes  
+// Get all envelopes  
 router.get('/', getAllEnvelopes);
 
-// GET specific envelope
+// Get specific envelope
 router.get('/:id', getSpecificEnvelope);
+
+// Get envelope transaction by id
+router.get('/:id/transactions', getEnvelopeTransaction);
 
 // Update a specific envelope
 router.put('/update/:id', updateSpecificEnvelope);
@@ -30,10 +30,10 @@ router.put('/update/:id', updateSpecificEnvelope);
 // Delete specific envelope
 router.delete('/delete/:id', deleteSpecificEnvelope);
 
-// GET envelope transaction by id
-router.get('/:id/transactions', getEnvelopeTransaction);
-
-// POST new transaction
+// New transaction
 router.post('/:id/transactions', newEnvelopeTransaction);
+
+// Create envelopes
+router.post('/newenvelope', createEnvelopes);
 
 module.exports = router;
