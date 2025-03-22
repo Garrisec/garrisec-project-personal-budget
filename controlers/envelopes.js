@@ -40,26 +40,20 @@ exports.getAllEnvelopes = async (req, res) => {
         if (envelopes.rowCount === 0) {
             return res.status(404).send({ message: 'Envelopes not found.' });
         } 
-        
-        /* TEMP
+
+        console.log('oi')
+
         res.status(200).send({
             status: 'Success',
-            message: 'Transaction information retrieved.',
+            message: 'Envolopes retrieved.',
             data: envelopes.rows
         });
-        */
 
         for (let i = 0; i != envelopes.rows.length; i++) {
             envelope.push(envelopes.rows[i]);
-
-            // const envelopesJSON = JSON.stringify(envelopes.rows[i]);
         }
 
-        // console.log(envelope);
-
         const envelopesJSON = JSON.stringify(envelope);
-
-        res.render('home', { envelope });
 
     } catch (err) {
         res.status(500).send(err);
